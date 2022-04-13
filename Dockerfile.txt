@@ -1,0 +1,21 @@
+# first -stage base image
+FROM  mcr.microsoft.com/dotnet/sdk:5.0 As build
+WORKDIR /source
+
+# Copy csproj and erstore dependencies
+COPY *.source .
+RUN dotnet restore
+
+#copy and pablish application file
+COPY . .
+RUN dotnet publish -c release -o /app
+
+#final stage image
+FROM mcr.microsoft.com/dotnet/aspnet:5.0
+WORKDIR /app
+COPY  --from=build /app .
+
+ENTRYPOINT [ "dotnet","dockerazhar.dll" ]
+
+
+
